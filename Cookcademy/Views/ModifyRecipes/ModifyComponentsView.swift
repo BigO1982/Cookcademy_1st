@@ -7,7 +7,16 @@
 
 import SwiftUI
 
-struct ModifyComponentsView: View {
+protocol RecipeComponent {
+  init()
+}
+
+protocol ModifyComponentView: View {
+  associatedtype Component
+  init(component: Binding<Component>, createAction: @escaping (Component) -> Void)
+}
+
+struct ModifyComponentsView<Component: RecipeComponent, DestinationView: ModifyComponentView>: View {
     @Binding var ingredients: [Ingredient]
     @State private var newIngredient = Ingredient()
     
@@ -16,7 +25,7 @@ struct ModifyComponentsView: View {
     
     var body: some View {
         VStack {
-          let addIngredientView = ModifyIngredientView(ingredient: $newIngredient) { ingredient in
+          let addIngredientView = ModifyIngredientView(component: $newIngredient) { ingredient in
                     ingredients.append(ingredient)
                     newIngredient = Ingredient()
                 }
@@ -46,7 +55,10 @@ struct ModifyComponentsView_Previews: PreviewProvider {
   @State static var emptyIngredients = [Ingredient]()
   static var previews: some View {
     NavigationView {
-      ModifyComponentsView(ingredients: $emptyIngredients)
+      ModifyComponentsView<Ingredient, ModifyIngredientView>(ingredients: $emptyIngredients)
+    }
+    NavigationView {
+      ModifyComponentsView<Ingredient, ModifyIngredientView>(ingredients: $recipe.ingredients)
     }
   }
 }
