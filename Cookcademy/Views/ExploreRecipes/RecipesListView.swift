@@ -21,7 +21,7 @@ struct RecipesListView: View {
         List {
             ForEach(recipes) { recipe in
                 NavigationLink(recipe.mainInformation.name,
-                               destination: RecipeDetailView(recipe: recipe))
+                               destination: RecipeDetailView(recipe: binding(for: recipe)))
             }
             .listRowBackground(listBackgroundColor)
             .foregroundColor(listTextColor)
@@ -61,14 +61,22 @@ struct RecipesListView: View {
 }
 
 extension RecipesListView {
-    private var recipes: [Recipe] {
-        recipeData.recipes(for: category)
+  private var recipes: [Recipe] {
+    recipeData.recipes(for: category)
+  }
+  
+  private var navigationTitle: String {
+    "\(category.rawValue) Recipes"
+  }
+  
+  func binding(for recipe: Recipe) -> Binding<Recipe> {
+    guard let index = recipeData.index(of: recipe) else {
+      fatalError("Recipe not found")
     }
-      
-    private var navigationTitle: String {
-        "\(category.rawValue) Recipes"
-    }
+    return $recipeData.recipes[index]
+  }
 }
+
 
 struct RecipesListView_Previews: PreviewProvider {
     static var previews: some View {
