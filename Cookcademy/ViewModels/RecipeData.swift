@@ -20,6 +20,10 @@ class RecipeData: ObservableObject {
       return filteredRecipes
   }
     
+  var favoriteRecipes: [Recipe] {
+    recipes.filter { $0.isFavorite }
+  }
+    
   func add(recipe: Recipe) {
     if recipe.isValid {
       recipes.append(recipe)
